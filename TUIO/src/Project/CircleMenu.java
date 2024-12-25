@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Arc2D;
+import java.util.ArrayList;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class CircleMenu extends JPanel {
         toggleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                toggleButtonVisibility();
+                new CameraForm().setVisible(true);
             }
         });
         add(toggleButton);
@@ -93,78 +94,33 @@ public class CircleMenu extends JPanel {
         toggleButton.setVisible(isButtonVisible);
     }
     
-    private void FillProductDetails(){
-        Map<String, String> camera1Details = new HashMap<>();
-        camera1Details.put("Info", 
-                "Model: Canon EOS R6\n" +
-                "Resolution: 20.1 MP\n" +
-                "Sensor: Full-Frame CMOS\n" +
-                "Features: 4K Video, In-body stabilization\n" +
-                "Weight: 680g");
-        camera1Details.put("Pricing", 
-                "Price: $2,499\n" +
-                "Discount: 10% off\n" +
-                "Final Price: $2,249\n" +
-                "Accessories: Battery, Charger, Lens Hood (Included)");
-        camera1Details.put("Reviews", 
-                "1. Amazing performance for wildlife photography! - 5/5\n" +
-                "2. Great video capabilities, but battery life could be better. - 4/5\n" +
-                "3. Lightweight and easy to handle, worth the price. - 5/5");
-        camera1Details.put("Rating", 
-                "Overall Rating: 4.7/5\n" +
-                "Image Quality: 5/5\n" +
-                "Video Quality: 4.8/5\n" +
-                "Usability: 4.5/5\n" +
-                "Value for Money: 4.6/5");
-        productDetails.put(2, camera1Details);
+    protected void FillProductDetails(){
+        ArrayList<Camera> cameraData = Camera.ReadCamerasFromFile();
         
-        Map<String, String> camera2Details = new HashMap<>();
-        camera2Details.put("Info", 
-                "Model: Nikon Z6 II\n" +
-                "Resolution: 24.5 MP\n" +
-                "Sensor: Full-Frame CMOS\n" +
-                "Features: Dual processors, 4K video, Great autofocus\n" +
-                "Weight: 705g");
-        camera2Details.put("Pricing", 
-                "Price: $1,999\n" +
-                "Discount: 5% off\n" +
-                "Final Price: $1,899\n" +
-                "Accessories: Battery, Charger, Strap (Included)");
-        camera2Details.put("Reviews", 
-                "1. Excellent autofocus and great for low light. - 5/5\n" +
-                "2. Build quality is top-notch, but a bit pricey. - 4/5\n" +
-                "3. Highly recommend for video creators! - 5/5");
-        camera2Details.put("Rating", 
-                "Overall Rating: 4.6/5\n" +
-                "Image Quality: 4.8/5\n" +
-                "Video Quality: 4.7/5\n" +
-                "Usability: 4.4/5\n" +
-                "Value for Money: 4.5/5");
-        productDetails.put(3, camera2Details);
+        for (int i = 0; i < cameraData.size(); i++){
+            Map<String, String> cameraDetails = new HashMap();
+            cameraDetails.put("Info", "Model: " + cameraData.get(i).getModel() + "\n" + "Resolution: " + cameraData.get(i).getResolution() + "\n" + "Sensor: " + cameraData.get(i).getSensor() + "\n" + "Features: " + cameraData.get(i).getFeatures());
+            cameraDetails.put("Pricing", 
+                "Price: " + String.format("%.2f", cameraData.get(i).getPrice()) + "\n" +
+                "Discount: " + String.format("%.2f", cameraData.get(i).getDiscount() * 100f) + "% \n" + 
+                "Final Price: " + String.format("%.2f", cameraData.get(i).getPrice() - (cameraData.get(i).getPrice() * cameraData.get(i).getDiscount()))
+            );
 
-        Map<String, String> camera3Details = new HashMap<>();
-        camera3Details.put("Info", 
-                "Model: Sony A7 III\n" +
-                "Resolution: 24.2 MP\n" +
-                "Sensor: Full-Frame CMOS\n" +
-                "Features: 4K Video, Long battery life\n" +
-                "Weight: 650g");
-        camera3Details.put("Pricing", 
-                "Price: $1,999\n" +
-                "Discount: None\n" +
-                "Final Price: $1,999\n" +
-                "Accessories: Battery, Charger, 64GB SD Card (Included)");
-        camera3Details.put("Reviews", 
-                "1. Versatile camera, suitable for both photos and videos. - 5/5\n" +
-                "2. Best value for money in the full-frame category. - 5/5\n" +
-                "3. A bit heavy, but incredible image quality. - 4/5");
-        camera3Details.put("Rating", 
-                "Overall Rating: 4.9/5\n" +
-                "Image Quality: 5/5\n" +
-                "Video Quality: 4.9/5\n" +
-                "Usability: 4.7/5\n" +
-                "Value for Money: 4.8/5");
-        productDetails.put(4, camera3Details);
+            
+            StringBuilder reviewsText = new StringBuilder();
+            for (String review : cameraData.get(i).getReviews()) {
+                reviewsText.append(review).append("\n");
+            }
+            cameraDetails.put("Reviews", reviewsText.toString());
+            
+            StringBuilder ratingsText = new StringBuilder();
+            for (String rating : cameraData.get(i).getRatings()) {
+                ratingsText.append(rating).append("\n");
+            }
+            cameraDetails.put("Rating", ratingsText.toString());
+            
+            productDetails.put(i + 2, cameraDetails);
+        }
     }
     
     public void SetSelectedProductIndex(int selectedIndex) {
