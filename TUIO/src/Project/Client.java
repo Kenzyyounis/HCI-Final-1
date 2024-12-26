@@ -4,6 +4,8 @@ import java.net.*;
 import java.io.*;
 
 public class Client {
+    public static Client instance;
+    
     private Socket socket = null;
     private DataInputStream input = null;
     private DataOutputStream out = null;
@@ -12,6 +14,10 @@ public class Client {
     // Constructor to put IP address and port
     public Client(String address, int port) {
         try {
+            if (instance != null){
+                return;
+            }
+            
             // Establish a connection
             socket = new Socket(address, port);
             System.out.println("Connected to server");
@@ -25,7 +31,8 @@ public class Client {
 
             // Start a new thread to keep reading messages from the server
             new Thread(new ServerListener()).start();
-
+            
+            instance = this;
         } catch (UnknownHostException u) {
             System.out.println("Unknown host: " + u.getMessage());
         } catch (IOException i) {
@@ -70,9 +77,5 @@ public class Client {
                 }
             }
         }
-    }
-    
-    public static void main(String[] args) {
-        Client client = new Client("localhost", 3000);
     }
 }

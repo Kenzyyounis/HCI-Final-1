@@ -1,4 +1,5 @@
 import Project.CircleMenu;
+import Project.Client;
 import TUIO.TuioDemoComponent;
 import java.awt.*;
 import java.awt.geom.*;
@@ -30,6 +31,7 @@ public class TuioDemo  {
                 SwingUtilities.invokeLater(() -> {
                     JFrame frame = new JFrame("Circular Menu");
                     CircleMenu menu = new CircleMenu();
+                    Client client = new Client("localhost", 3000);
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     frame.add(menu);
                     frame.pack();

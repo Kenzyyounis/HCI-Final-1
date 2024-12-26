@@ -134,6 +134,10 @@ public class CircleMenu extends JPanel {
         ResetWindows();
 
         repaint();
+        
+        if (Client.instance != null){
+            Client.instance.sendJson("ModelIndex", Integer.toString(selectedProductIndex - 2));
+        }
     }
     
     private Map<String, String> GetSelectedProductDetails(){
