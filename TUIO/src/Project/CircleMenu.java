@@ -26,7 +26,7 @@ public class CircleMenu extends JPanel {
     
     private JLabel titleLabel;
     private JButton toggleButton;
-    private boolean isButtonVisible = true;
+    private boolean isButtonVisible = false;
     
     JFrame infoFrame;
     JFrame pricingFrame;
@@ -44,7 +44,7 @@ public class CircleMenu extends JPanel {
 
         add(titleLabel, BorderLayout.NORTH);
         
-        toggleButton = new JButton("Toggle Me!");
+        toggleButton = new JButton("Admin!");
         toggleButton.setBounds(getPreferredSize().width - 130, getPreferredSize().height - 70, 120, 40);
         toggleButton.addActionListener(new ActionListener() {
             @Override
@@ -53,6 +53,7 @@ public class CircleMenu extends JPanel {
             }
         });
         add(toggleButton);
+        toggleButtonVisibility(isButtonVisible);
 
         setPreferredSize(new Dimension(DIAMETER + 50, DIAMETER + 100));
     }
@@ -89,9 +90,10 @@ public class CircleMenu extends JPanel {
         }
     }
     
-    public void toggleButtonVisibility() {
-        isButtonVisible = !isButtonVisible;
-        toggleButton.setVisible(isButtonVisible);
+    public void toggleButtonVisibility(boolean isVisible) {
+        isButtonVisible = isVisible;
+        toggleButton.setVisible(isVisible);
+        repaint();
     }
     
     protected void FillProductDetails(){

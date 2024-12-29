@@ -2,6 +2,7 @@ package Project;
 
 import java.net.*;
 import java.io.*;
+import java.util.HashMap;
 
 public class Client {
     public static Client instance;
@@ -62,7 +63,23 @@ public class Client {
             try {
                 while ((receivedMessage = in.readLine()) != null) {
                     System.out.println("Received: " + receivedMessage);
-
+                    
+                    try {
+                        HashMap<String, String> message = parseJson(receivedMessage);
+                        System.out.println("Parsed JSON: " + message);
+                        
+                        if (message.containsKey("Action") && message.containsKey("Value")){
+                            String action = message.get("Action");
+                            String value = message.get("Value");
+                            if (action.startsWith("FaceIdentification")){
+                                if (CircleMenu.instance != null){
+                                    CircleMenu.instance.toggleButtonVisibility(Boolean.parseBoolean(value));
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Error parsing JSON: " + e.getMessage());
+                    }
                 }
             } catch (IOException i) {
                 System.out.println("Connection closed: " + i.getMessage());
@@ -76,6 +93,33 @@ public class Client {
                     System.out.println("Error closing connection: " + i.getMessage());
                 }
             }
+        }
+        
+        private HashMap<String, String> parseJson(String json) throws Exception {
+            HashMap<String, String> map = new HashMap<>();
+
+            // Remove surrounding braces and split by commas
+            json = json.trim();
+            if (!json.startsWith("{") || !json.endsWith("}")) {
+                throw new Exception("Invalid JSON format");
+            }
+            json = json.substring(1, json.length() - 1); // Remove the braces
+
+            // Split the key-value pairs
+            String[] pairs = json.split(",");
+            for (String pair : pairs) {
+                String[] keyValue = pair.split(":");
+                if (keyValue.length != 2) {
+                    throw new Exception("Invalid key-value pair: " + pair);
+                }
+
+                // Remove quotes and trim whitespace
+                String key = keyValue[0].trim().replaceAll("^\"|\"$", "");
+                String value = keyValue[1].trim().replaceAll("^\"|\"$", "");
+                map.put(key, value);
+            }
+
+            return map;
         }
     }
 }
