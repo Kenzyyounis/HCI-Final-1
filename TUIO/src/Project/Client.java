@@ -72,8 +72,13 @@ public class Client {
                             String action = message.get("Action");
                             String value = message.get("Value");
                             if (action.startsWith("FaceIdentification")){
-                                if (CircleMenu.instance != null){
+                                if (CircleMenu.instance != null && CircleMenu.instance.getPublicModeActive() == false){
                                     CircleMenu.instance.toggleButtonVisibility(Boolean.parseBoolean(value));
+                                }
+                            }
+                            else if (action.startsWith("UserAge")){
+                                if (CircleMenu.instance != null){
+                                    CircleMenu.instance.togglePrivacyScreen(Boolean.parseBoolean(value));
                                 }
                             }
                         }

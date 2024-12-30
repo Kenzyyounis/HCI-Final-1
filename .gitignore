@@ -85,7 +85,7 @@ AR/[Aa]ssets/[Ss]treamingAssets/aa/*
 .mtj.tmp/
 
 # Package Files #
-*.jar
+# *.jar
 *.war
 *.nar
 *.ear
@@ -109,7 +109,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
+# dist/
 downloads/
 eggs/
 .eggs/

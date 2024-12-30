@@ -85,7 +85,7 @@ public class TuioDemoObject extends TuioObject {
 
         super.update(tobj);
         
-        if (CircleMenu.instance != null) {
+        if (CircleMenu.instance != null && CircleMenu.instance.getPublicModeActive() == false) {
             switch (symbol_id) {
                 case 0:
                     float angleInDegrees = (float) Math.toDegrees(angle);

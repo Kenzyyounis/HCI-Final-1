@@ -28,6 +28,9 @@ public class CircleMenu extends JPanel {
     private JButton toggleButton;
     private boolean isButtonVisible = false;
     
+    private JLabel privacyLabel;
+    private boolean privacyModeActive = false;
+    
     JFrame infoFrame;
     JFrame pricingFrame;
     JFrame reviewsFrame;
@@ -37,6 +40,12 @@ public class CircleMenu extends JPanel {
         instance = this;
         
         FillProductDetails();
+        
+        privacyLabel = new JLabel("Current user is underage", SwingConstants.CENTER);
+        privacyLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        privacyLabel.setForeground(Color.RED);
+        privacyLabel.setVisible(false); // Hidden by default
+        add(privacyLabel, BorderLayout.CENTER);
         
         titleLabel = new JLabel("Selected Product Index: None", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
@@ -61,32 +70,35 @@ public class CircleMenu extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        if (!privacyModeActive) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        int x = 25, y = 25;
-        int startAngle = 90;
-        int arcAngle = 360 / LABELS.length;
+            int x = 25, y = 25;
+            int startAngle = 90;
+            int arcAngle = 360 / LABELS.length;
 
-        for (int i = 0; i < LABELS.length; i++) {
-            // Draw each slice
-            g2d.setColor(COLORS[i]);
-            g2d.fill(new Arc2D.Double(x, y, DIAMETER, DIAMETER, startAngle, arcAngle, Arc2D.PIE));
-
-            // Highlight the slice if necessary
-            if (i == highlightedIndex) {
-                g2d.setColor(new Color(255, 255, 255, 100)); // Semi-transparent white overlay
+            for (int i = 0; i < LABELS.length; i++) {
+                // Draw each slice
+                g2d.setColor(COLORS[i]);
                 g2d.fill(new Arc2D.Double(x, y, DIAMETER, DIAMETER, startAngle, arcAngle, Arc2D.PIE));
+
+                // Highlight the slice if necessary
+                if (i == highlightedIndex) {
+                    g2d.setColor(new Color(255, 255, 255, 100)); // Semi-transparent white overlay
+                    g2d.fill(new Arc2D.Double(x, y, DIAMETER, DIAMETER, startAngle, arcAngle, Arc2D.PIE));
+                }
+
+                // Draw the label
+                double theta = Math.toRadians(startAngle + arcAngle / 2.0);
+                int labelX = (int) (x + DIAMETER / 2 + Math.cos(theta) * DIAMETER / 3);
+                int labelY = (int) (y + DIAMETER / 2 - Math.sin(theta) * DIAMETER / 3);
+                g2d.setColor(Color.BLACK);
+                g2d.drawString(LABELS[i], labelX - 20, labelY); // Adjust offset for label positioning
+
+                startAngle += arcAngle;
             }
-
-            // Draw the label
-            double theta = Math.toRadians(startAngle + arcAngle / 2.0);
-            int labelX = (int) (x + DIAMETER / 2 + Math.cos(theta) * DIAMETER / 3);
-            int labelY = (int) (y + DIAMETER / 2 - Math.sin(theta) * DIAMETER / 3);
-            g2d.setColor(Color.BLACK);
-            g2d.drawString(LABELS[i], labelX - 20, labelY); // Adjust offset for label positioning
-
-            startAngle += arcAngle;
         }
     }
     
@@ -94,6 +106,18 @@ public class CircleMenu extends JPanel {
         isButtonVisible = isVisible;
         toggleButton.setVisible(isVisible);
         repaint();
+    }
+    
+    public void togglePrivacyScreen(boolean canAccess) {
+        privacyModeActive = !canAccess;
+        privacyLabel.setVisible(privacyModeActive);
+        toggleComponentsVisibility(!privacyModeActive);
+        toggleButtonVisibility(false);
+        repaint();
+    }
+    
+    public boolean getPublicModeActive(){
+        return privacyModeActive;
     }
     
     protected void FillProductDetails(){
@@ -285,6 +309,16 @@ public class CircleMenu extends JPanel {
         } else {
             ratingFrame.toFront();
         }
+    }
+    
+    private void toggleComponentsVisibility(boolean visible) {
+        titleLabel.setVisible(visible);
+        toggleButton.setVisible(visible);
+
+        if (infoFrame != null) infoFrame.setVisible(visible);
+        if (pricingFrame != null) pricingFrame.setVisible(visible);
+        if (reviewsFrame != null) reviewsFrame.setVisible(visible);
+        if (ratingFrame != null) ratingFrame.setVisible(visible);
     }
     
     private void ResetWindows(){
